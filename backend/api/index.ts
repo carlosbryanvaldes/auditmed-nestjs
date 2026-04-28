@@ -2,15 +2,15 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
+import express, { Express } from 'express';
 import { IncomingMessage, ServerResponse } from 'http';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 
 const expressServer = express();
-let cachedApp: express.Express | null = null;
+let cachedApp: Express | null = null;
 
-async function bootstrap(): Promise<express.Express> {
+async function bootstrap(): Promise<Express> {
   if (cachedApp) return cachedApp;
 
   const nestApp = await NestFactory.create(
@@ -38,7 +38,7 @@ async function bootstrap(): Promise<express.Express> {
   nestApp.setGlobalPrefix('api', { exclude: ['health'] });
 
   await nestApp.init();
-  cachedApp = expressServer;
+  cachedApp = expressServer as Express;
   return cachedApp;
 }
 
