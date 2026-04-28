@@ -8,7 +8,18 @@
       "Bash(echo \"Backend PID: $!\")",
       "Bash(echo \"Frontend PID: $!\")",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(grep -E \"\\\\.env$|dev\\\\.db|node_modules\")",
+      "Bash(git -C /Users/carlosalbertobryanvaldes/Downloads/auditmed-nestjs remote -v)",
+      "Bash(git -C /Users/carlosalbertobryanvaldes/Downloads/auditmed-nestjs log --oneline -3)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(ssh-keygen -t ed25519 -C \"auditmed-deploy\" -f ~/.ssh/id_ed25519 -N \"\")",
+      "Bash(ssh -T git@github.com)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_VzIw8UGf5Beo@ep-billowing-breeze-am8segkr.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx prisma db push --schema prisma/schema.prisma)",
+      "Bash(git commit -m 'fix: use default express import to fix TS2349 callable error *)",
+      "Bash(curl -s \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/health\")",
+      "Bash(curl -s -X POST \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin1234!\"}')"
     ]
   }
 }
