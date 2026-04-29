@@ -23,7 +23,9 @@
       "Bash(git commit -m ' *)",
       "Bash(git commit -m 'fix: inline build command in vercel.json to avoid exit 127 *)",
       "Bash(git commit -m 'fix: add --include=dev to npm install \\(NODE_ENV=production omits devDeps\\) *)",
-      "Bash(git commit -m 'fix: restore package.json + use builds array for static-build + node *)"
+      "Bash(git commit -m 'fix: restore package.json + use builds array for static-build + node *)",
+      "Bash(curl -s \"https://auditmed-nestjs-carlosbryanvaldes-projects.vercel.app/health\")",
+      "Bash(git commit -m 'fix: add Prisma binary target for Vercel Linux runtime *)"
     ]
   }
 }
