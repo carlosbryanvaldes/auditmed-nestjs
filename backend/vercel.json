@@ -4,7 +4,10 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node",
-      "config": { "bundle": false }
+      "config": {
+        "bundle": false,
+        "includeFiles": ["dist/**", "node_modules/.prisma/**"]
+      }
     }
   ],
   "routes": [
