@@ -32,6 +32,9 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Claude Code settings (puede contener tokens)
+.claude/
+
 # Editor
 .vscode/
 .idea/

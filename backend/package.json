@@ -15,7 +15,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate deploy",
     "prisma:studio": "npx prisma studio",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate && npm run build"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
