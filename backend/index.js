@@ -1,21 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-
-function listDir(dir) {
-  try { return fs.readdirSync(dir); } catch(e) { return `ERROR: ${e.message}`; }
-}
-
-module.exports = (req, res) => {
-  const taskDir = '/var/task';
-  const backendDir = '/var/task/backend';
-  const info = {
-    __dirname,
-    taskDir: listDir(taskDir),
-    backendDir: listDir(backendDir),
-    backendDist: listDir(path.join(backendDir, 'dist')),
-    taskDist: listDir(path.join(taskDir, 'dist')),
+try {
+  const { createApp } = require('./dist/serverless');
+  let cachedApp = null;
+  module.exports = async (req, res) => {
+    try {
+      if (!cachedApp) cachedApp = await createApp();
+      cachedApp(req, res);
+    } catch (e) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: e.message, stack: e.stack }));
+    }
   };
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(info, null, 2));
-};
+} catch (e) {
+  module.exports = (req, res) => {
+    res.statusCode = 500;
+    res.end(JSON.stringify({ loadError: e.message, stack: e.stack }));
+  };
+}
