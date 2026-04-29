@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/handler.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/health",      "destination": "/api/handler.js" },
+    { "source": "/api/:path*",  "destination": "/api/handler.js" },
+    { "source": "/(.*)",        "destination": "/index.html" }
+  ]
+}

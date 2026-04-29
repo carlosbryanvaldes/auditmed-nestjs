@@ -19,7 +19,8 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_VzIw8UGf5Beo@ep-billowing-breeze-am8segkr.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx prisma db push --schema prisma/schema.prisma)",
       "Bash(git commit -m 'fix: use default express import to fix TS2349 callable error *)",
       "Bash(curl -s \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/health\")",
-      "Bash(curl -s -X POST \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin1234!\"}')"
+      "Bash(curl -s -X POST \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin1234!\"}')",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
