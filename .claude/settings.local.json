@@ -20,7 +20,9 @@
       "Bash(git commit -m 'fix: use default express import to fix TS2349 callable error *)",
       "Bash(curl -s \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/health\")",
       "Bash(curl -s -X POST \"https://auditmed-nestjs-klhmx1rwu-carlosbryanvaldes-projects.vercel.app/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin1234!\"}')",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'fix: inline build command in vercel.json to avoid exit 127 *)",
+      "Bash(git commit -m 'fix: add --include=dev to npm install \\(NODE_ENV=production omits devDeps\\) *)"
     ]
   }
 }
