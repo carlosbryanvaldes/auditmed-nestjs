@@ -1,17 +1,20 @@
 {
   "version": 2,
-  "installCommand": "echo 'skip root install'",
-  "buildCommand": "cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install --include=dev && npx prisma generate && npm run build",
-  "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/handler.js": {
-      "memory": 1024,
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "frontend/dist" }
+    },
+    {
+      "src": "api/handler.js",
+      "use": "@vercel/node"
     }
-  },
-  "rewrites": [
-    { "source": "/health",     "destination": "/api/handler.js" },
-    { "source": "/api/:path*", "destination": "/api/handler.js" },
-    { "source": "/(.*)",       "destination": "/index.html" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)",  "dest": "/api/handler.js" },
+    { "src": "/health",    "dest": "/api/handler.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)",      "dest": "/index.html" }
   ]
 }
