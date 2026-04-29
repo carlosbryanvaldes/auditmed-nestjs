@@ -1,6 +1,3 @@
-// AuditMed Pro — Prisma Schema (PostgreSQL — producción Vercel / Neon)
-// Para desarrollo local con SQLite usar: prisma/schema.sqlite.prisma
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
@@ -10,8 +7,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// ── Auth / RBAC ───────────────────────────────────────────────────────────────
 
 model User {
   id           Int      @id @default(autoincrement())
@@ -68,8 +63,6 @@ model RolePermission {
   @@map("role_permissions")
 }
 
-// ── Master Data ───────────────────────────────────────────────────────────────
-
 model UnidadEjecutora {
   id        Int      @id @default(autoincrement())
   name      String
@@ -83,8 +76,6 @@ model UnidadEjecutora {
 
   @@map("unidades_ejecutoras")
 }
-
-// ── Forms ─────────────────────────────────────────────────────────────────────
 
 model FormTemplate {
   id          Int      @id @default(autoincrement())
@@ -154,8 +145,6 @@ model FormFieldOption {
   @@index([fieldId])
   @@map("form_field_options")
 }
-
-// ── Audits ────────────────────────────────────────────────────────────────────
 
 model AuditCase {
   id                   Int       @id @default(autoincrement())

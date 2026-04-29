@@ -25,7 +25,11 @@
       "Bash(git commit -m 'fix: add --include=dev to npm install \\(NODE_ENV=production omits devDeps\\) *)",
       "Bash(git commit -m 'fix: restore package.json + use builds array for static-build + node *)",
       "Bash(curl -s \"https://auditmed-nestjs-carlosbryanvaldes-projects.vercel.app/health\")",
-      "Bash(git commit -m 'fix: add Prisma binary target for Vercel Linux runtime *)"
+      "Bash(git commit -m 'fix: add Prisma binary target for Vercel Linux runtime *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://auditmed-nestjs.vercel.app/health\")",
+      "Bash(curl -s -X POST \"https://auditmed-nestjs.vercel.app/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"Admin1234!\"}')",
+      "Bash(node -e \"const {PrismaNeon} = require\\('@prisma/adapter-neon'\\); console.log\\(PrismaNeon.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(npm uninstall *)"
     ]
   }
 }
