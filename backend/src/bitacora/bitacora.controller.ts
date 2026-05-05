@@ -94,7 +94,7 @@ export class BitacoraController {
   @Post()
   @RequirePermissions('bitacora:write')
   crearBitacora(@Request() req, @Body() dto: CrearBitacoraDto) {
-    return this.service.crearBitacora(req.user.sub, dto);
+    return this.service.crearBitacora(req.user.id, dto);
   }
 
   /** Pacientes activos de una bitácora */
@@ -124,7 +124,7 @@ export class BitacoraController {
     @Body() dto: RegistrarEventoDto,
   ) {
     return this.service.registrarEvento(
-      pacienteId, bitacoraId, req.user.sub, dto,
+      pacienteId, bitacoraId, req.user.id, dto,
     );
   }
 
@@ -136,6 +136,6 @@ export class BitacoraController {
     @Request() req,
     @Body() dto: CerrarBitacoraDto,
   ) {
-    return this.service.cerrarBitacora(id, req.user.sub, dto);
+    return this.service.cerrarBitacora(id, req.user.id, dto);
   }
 }

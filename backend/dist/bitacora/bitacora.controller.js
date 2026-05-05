@@ -54,7 +54,7 @@ let BitacoraController = class BitacoraController {
         return this.service.obtenerHistorialPaciente(hash);
     }
     crearBitacora(req, dto) {
-        return this.service.crearBitacora(req.user.sub, dto);
+        return this.service.crearBitacora(req.user.id, dto);
     }
     getPacientes(id) {
         return this.service.obtenerPacientesActivos(id);
@@ -63,10 +63,10 @@ let BitacoraController = class BitacoraController {
         return this.service.ingresarPaciente(id, dto);
     }
     registrarEvento(bitacoraId, pacienteId, req, dto) {
-        return this.service.registrarEvento(pacienteId, bitacoraId, req.user.sub, dto);
+        return this.service.registrarEvento(pacienteId, bitacoraId, req.user.id, dto);
     }
     cerrarBitacora(id, req, dto) {
-        return this.service.cerrarBitacora(id, req.user.sub, dto);
+        return this.service.cerrarBitacora(id, req.user.id, dto);
     }
 };
 exports.BitacoraController = BitacoraController;
