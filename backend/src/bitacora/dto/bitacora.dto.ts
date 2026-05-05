@@ -1,6 +1,6 @@
 import {
   IsString, IsNotEmpty, IsOptional, IsNumber,
-  IsEnum, IsInt, IsPositive,
+  IsEnum, IsInt, IsPositive, IsBoolean, Min, Max,
 } from 'class-validator';
 
 export enum TurnoBitacoraDto {
@@ -90,4 +90,53 @@ export class RegistrarEventoDto {
 export class CerrarBitacoraDto {
   @IsOptional() @IsString()
   observacionesCierre?: string;
+}
+
+// ── Admin: Sedes clínicas ─────────────────────────────────────────────────────
+export class CrearSedeDto {
+  @IsString() @IsNotEmpty()
+  nombre: string;
+
+  @IsNumber() @Min(-90) @Max(90)
+  latitud: number;
+
+  @IsNumber() @Min(-180) @Max(180)
+  longitud: number;
+
+  @IsOptional() @IsInt() @IsPositive()
+  radioMetros?: number;
+}
+
+export class UpdateSedeDto {
+  @IsOptional() @IsString() @IsNotEmpty()
+  nombre?: string;
+
+  @IsOptional() @IsNumber() @Min(-90) @Max(90)
+  latitud?: number;
+
+  @IsOptional() @IsNumber() @Min(-180) @Max(180)
+  longitud?: number;
+
+  @IsOptional() @IsInt() @IsPositive()
+  radioMetros?: number;
+
+  @IsOptional() @IsBoolean()
+  activa?: boolean;
+}
+
+// ── Admin: Servicios ──────────────────────────────────────────────────────────
+export class CrearServicioDto {
+  @IsString() @IsNotEmpty()
+  nombre: string;
+
+  @IsString() @IsNotEmpty()
+  sedeId: string;
+}
+
+export class UpdateServicioDto {
+  @IsOptional() @IsString() @IsNotEmpty()
+  nombre?: string;
+
+  @IsOptional() @IsBoolean()
+  activo?: boolean;
 }

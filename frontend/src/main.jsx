@@ -18,6 +18,7 @@ import RoleList from './pages/admin/RoleList';
 import MasterData from './pages/admin/MasterData';
 import BitacoraHome from './pages/bitacora/BitacoraHome';
 import HistorialPaciente from './pages/bitacora/HistorialPaciente';
+import BitacoraAdmin from './pages/bitacora/BitacoraAdmin';
 
 import './index.css';
 
@@ -54,6 +55,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               {/* Bitácora de Internos */}
               <Route path="bitacora" element={<PrivateRoute permission="bitacora:read"><BitacoraHome /></PrivateRoute>} />
               <Route path="bitacora/historial/:hash" element={<PrivateRoute permission="bitacora:historial"><HistorialPaciente /></PrivateRoute>} />
+              <Route path="bitacora/admin" element={<PrivateRoute permission="bitacora:admin"><BitacoraAdmin /></PrivateRoute>} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

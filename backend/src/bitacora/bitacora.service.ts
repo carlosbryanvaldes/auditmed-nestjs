@@ -12,6 +12,10 @@ import {
   RegistrarEventoDto,
   CerrarBitacoraDto,
   TipoEventoDto,
+  CrearSedeDto,
+  UpdateSedeDto,
+  CrearServicioDto,
+  UpdateServicioDto,
 } from './dto/bitacora.dto';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -381,12 +385,120 @@ export class BitacoraService {
     });
   }
 
-  // ── 10. Listar sedes y servicios (admin) ───────────────────────────────────
+  // ── 10. Listar sedes — vista operativa (solo activas) ─────────────────────
   async listarSedes() {
     return this.prisma.sedeClinica.findMany({
       where: { activa: true },
       include: { servicios: { where: { activo: true }, select: { id: true, nombre: true } } },
       orderBy: { nombre: 'asc' },
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ADMINISTRACIÓN DE SEDES
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // ── 11. Listar todas las sedes (admin — incluye inactivas) ─────────────────
+  async adminListarSedes() {
+    return this.prisma.sedeClinica.findMany({
+      include: {
+        _count: { select: { servicios: true, bitacoras: true } },
+      },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
+  // ── 12. Crear sede ─────────────────────────────────────────────────────────
+  async adminCrearSede(dto: CrearSedeDto) {
+    return this.prisma.sedeClinica.create({
+      data: {
+        nombre:     dto.nombre,
+        latitud:    dto.latitud,
+        longitud:   dto.longitud,
+        radioMetros: dto.radioMetros ?? 200,
+      },
+    });
+  }
+
+  // ── 13. Actualizar sede ────────────────────────────────────────────────────
+  async adminActualizarSede(id: string, dto: UpdateSedeDto) {
+    const sede = await this.prisma.sedeClinica.findUnique({ where: { id } });
+    if (!sede) throw new NotFoundException('Sede no encontrada');
+    return this.prisma.sedeClinica.update({ where: { id }, data: dto });
+  }
+
+  // ── 14. Eliminar sede (soft-delete — marca inactiva) ──────────────────────
+  async adminEliminarSede(id: string) {
+    const sede = await this.prisma.sedeClinica.findUnique({ where: { id } });
+    if (!sede) throw new NotFoundException('Sede no encontrada');
+    const bitacorasActivas = await this.prisma.bitacora.count({
+      where: { sedeId: id, estado: 'ABIERTA' },
+    });
+    if (bitacorasActivas > 0) {
+      throw new BadRequestException(
+        'No se puede desactivar una sede con bitácoras activas abiertas',
+      );
+    }
+    return this.prisma.sedeClinica.update({
+      where: { id },
+      data: { activa: false },
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ADMINISTRACIÓN DE SERVICIOS
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // ── 15. Listar servicios de una sede (admin — incluye inactivos) ──────────
+  async adminListarServicios(sedeId?: string) {
+    return this.prisma.servicio.findMany({
+      where: sedeId ? { sedeId } : undefined,
+      include: {
+        sede: { select: { id: true, nombre: true } },
+        _count: { select: { bitacoras: true } },
+      },
+      orderBy: [{ sede: { nombre: 'asc' } }, { nombre: 'asc' }],
+    });
+  }
+
+  // ── 16. Crear servicio ─────────────────────────────────────────────────────
+  async adminCrearServicio(dto: CrearServicioDto) {
+    const sede = await this.prisma.sedeClinica.findUnique({
+      where: { id: dto.sedeId },
+    });
+    if (!sede) throw new NotFoundException('Sede no encontrada');
+    return this.prisma.servicio.create({
+      data: { nombre: dto.nombre, sedeId: dto.sedeId },
+      include: { sede: { select: { id: true, nombre: true } } },
+    });
+  }
+
+  // ── 17. Actualizar servicio ────────────────────────────────────────────────
+  async adminActualizarServicio(id: string, dto: UpdateServicioDto) {
+    const srv = await this.prisma.servicio.findUnique({ where: { id } });
+    if (!srv) throw new NotFoundException('Servicio no encontrado');
+    return this.prisma.servicio.update({
+      where: { id },
+      data: dto,
+      include: { sede: { select: { id: true, nombre: true } } },
+    });
+  }
+
+  // ── 18. Eliminar servicio (soft-delete) ────────────────────────────────────
+  async adminEliminarServicio(id: string) {
+    const srv = await this.prisma.servicio.findUnique({ where: { id } });
+    if (!srv) throw new NotFoundException('Servicio no encontrado');
+    const bitacorasActivas = await this.prisma.bitacora.count({
+      where: { servicioId: id, estado: 'ABIERTA' },
+    });
+    if (bitacorasActivas > 0) {
+      throw new BadRequestException(
+        'No se puede desactivar un servicio con bitácoras activas',
+      );
+    }
+    return this.prisma.servicio.update({
+      where: { id },
+      data: { activo: false },
     });
   }
 }

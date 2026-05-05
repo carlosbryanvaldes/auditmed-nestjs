@@ -92,4 +92,16 @@ export const bitacoraAPI = {
   registrarEvento:  (id, pacId, data) => apiClient.post(`/api/bitacora/${id}/pacientes/${pacId}/eventos`, data),
   getHistorial:     (hash)          => apiClient.get(`/api/bitacora/paciente/${hash}/historial`),
   cerrar:           (id)            => apiClient.patch(`/api/bitacora/${id}/cerrar`),
+
+  // Admin — Sedes
+  adminListarSedes:      ()        => apiClient.get('/api/bitacora/admin/sedes'),
+  adminCrearSede:        (d)       => apiClient.post('/api/bitacora/admin/sedes', d),
+  adminActualizarSede:   (id, d)   => apiClient.put(`/api/bitacora/admin/sedes/${id}`, d),
+  adminEliminarSede:     (id)      => apiClient.delete(`/api/bitacora/admin/sedes/${id}`),
+
+  // Admin — Servicios
+  adminListarServicios:    (sedeId) => apiClient.get('/api/bitacora/admin/servicios', { params: sedeId ? { sedeId } : {} }),
+  adminCrearServicio:      (d)      => apiClient.post('/api/bitacora/admin/servicios', d),
+  adminActualizarServicio: (id, d)  => apiClient.put(`/api/bitacora/admin/servicios/${id}`, d),
+  adminEliminarServicio:   (id)     => apiClient.delete(`/api/bitacora/admin/servicios/${id}`),
 };

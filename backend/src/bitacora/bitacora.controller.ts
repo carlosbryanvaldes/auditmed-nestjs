@@ -1,6 +1,6 @@
 import {
-  Controller, Get, Post, Patch,
-  Body, Param, UseGuards, Request,
+  Controller, Get, Post, Put, Patch, Delete,
+  Body, Param, Query, UseGuards, Request,
 } from '@nestjs/common';
 import { BitacoraService } from './bitacora.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -11,6 +11,10 @@ import {
   IngresarPacienteDto,
   RegistrarEventoDto,
   CerrarBitacoraDto,
+  CrearSedeDto,
+  UpdateSedeDto,
+  CrearServicioDto,
+  UpdateServicioDto,
 } from './dto/bitacora.dto';
 
 @Controller('bitacora')
@@ -79,5 +83,57 @@ export class BitacoraController {
     @Body() dto: CerrarBitacoraDto,
   ) {
     return this.service.cerrarBitacora(id, req.user.sub, dto);
+  }
+
+  // ── Admin: Sedes ────────────────────────────────────────────────────────────
+
+  @Get('admin/sedes')
+  @RequirePermissions('bitacora:admin')
+  adminListarSedes() {
+    return this.service.adminListarSedes();
+  }
+
+  @Post('admin/sedes')
+  @RequirePermissions('bitacora:admin')
+  adminCrearSede(@Body() dto: CrearSedeDto) {
+    return this.service.adminCrearSede(dto);
+  }
+
+  @Put('admin/sedes/:id')
+  @RequirePermissions('bitacora:admin')
+  adminActualizarSede(@Param('id') id: string, @Body() dto: UpdateSedeDto) {
+    return this.service.adminActualizarSede(id, dto);
+  }
+
+  @Delete('admin/sedes/:id')
+  @RequirePermissions('bitacora:admin')
+  adminEliminarSede(@Param('id') id: string) {
+    return this.service.adminEliminarSede(id);
+  }
+
+  // ── Admin: Servicios ────────────────────────────────────────────────────────
+
+  @Get('admin/servicios')
+  @RequirePermissions('bitacora:admin')
+  adminListarServicios(@Query('sedeId') sedeId?: string) {
+    return this.service.adminListarServicios(sedeId);
+  }
+
+  @Post('admin/servicios')
+  @RequirePermissions('bitacora:admin')
+  adminCrearServicio(@Body() dto: CrearServicioDto) {
+    return this.service.adminCrearServicio(dto);
+  }
+
+  @Put('admin/servicios/:id')
+  @RequirePermissions('bitacora:admin')
+  adminActualizarServicio(@Param('id') id: string, @Body() dto: UpdateServicioDto) {
+    return this.service.adminActualizarServicio(id, dto);
+  }
+
+  @Delete('admin/servicios/:id')
+  @RequirePermissions('bitacora:admin')
+  adminEliminarServicio(@Param('id') id: string) {
+    return this.service.adminEliminarServicio(id);
   }
 }
