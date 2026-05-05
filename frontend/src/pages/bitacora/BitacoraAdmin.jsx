@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bitacoraAPI } from '../../api/client';
+import MapPicker from '../../components/MapPicker';
 
-function Modal({ title, onClose, children }) {
+function Modal({ title, onClose, wide, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`bg-white rounded-2xl shadow-2xl w-full mx-4 ${wide ? 'max-w-lg' : 'max-w-sm'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <span className="font-bold text-gray-900">{title}</span>
           <button className="btn-icon" onClick={onClose}>✕</button>
         </div>
-        <div className="px-5 py-4">{children}</div>
+        <div className="px-5 py-4 overflow-y-auto max-h-[80vh]">{children}</div>
       </div>
     </div>
   );
@@ -35,7 +39,7 @@ function SedesTab() {
   const openCreate = () => { setEditing(null); setForm(SEDE_EMPTY); setErr(''); setModal(true); };
   const openEdit   = (s) => {
     setEditing(s);
-    setForm({ nombre: s.nombre, latitud: String(s.latitud), longitud: String(s.longitud), radioMetros: String(s.radioMetros) });
+    setForm({ nombre: s.nombre, latitud: s.latitud, longitud: s.longitud, radioMetros: String(s.radioMetros) });
     setErr('');
     setModal(true);
   };
@@ -61,41 +65,74 @@ function SedesTab() {
     onError: (e) => alert(e?.response?.data?.message ?? 'Error al eliminar'),
   });
 
-  const f = (k) => (e) => setForm((prev) => ({ ...prev, [k]: e.target.value }));
   const valid = form.nombre && form.latitud !== '' && form.longitud !== '';
 
   return (
     <>
       {modal && (
-        <Modal title={editing ? 'Editar sede' : 'Nueva sede clínica'} onClose={() => setModal(false)}>
-          <div className="space-y-3">
+        <Modal title={editing ? 'Editar sede' : 'Nueva sede clínica'} onClose={() => setModal(false)} wide>
+          <div className="space-y-4">
+            {/* Nombre */}
             <div>
               <label className="label">Nombre *</label>
-              <input className="input" value={form.nombre} onChange={f('nombre')} placeholder="Hospital Central" />
+              <input
+                className="input"
+                value={form.nombre}
+                onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))}
+                placeholder="Hospital Central"
+              />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="label">Latitud *</label>
-                <input className="input" type="number" step="any" value={form.latitud} onChange={f('latitud')} placeholder="-12.0464" />
-              </div>
-              <div>
-                <label className="label">Longitud *</label>
-                <input className="input" type="number" step="any" value={form.longitud} onChange={f('longitud')} placeholder="-77.0428" />
-              </div>
-            </div>
+
+            {/* Mapa */}
             <div>
-              <label className="label">Radio (metros)</label>
-              <input className="input" type="number" min="50" value={form.radioMetros} onChange={f('radioMetros')} />
+              <label className="label">
+                Ubicación * — <span className="text-gray-400 font-normal">haz clic en el mapa para colocar el pin</span>
+              </label>
+              <MapPicker
+                lat={form.latitud}
+                lng={form.longitud}
+                radio={parseInt(form.radioMetros, 10) || 200}
+                onChange={(lat, lng) => setForm((f) => ({ ...f, latitud: lat, longitud: lng }))}
+              />
+              {form.latitud !== '' && form.longitud !== '' ? (
+                <p className="text-xs text-gray-400 mt-1">
+                  📍 {parseFloat(form.latitud).toFixed(6)}, {parseFloat(form.longitud).toFixed(6)}
+                </p>
+              ) : (
+                <p className="text-xs text-amber-500 mt-1">⚠️ Sin ubicación — haz clic en el mapa</p>
+              )}
             </div>
+
+            {/* Radio */}
+            <div>
+              <label className="label">Radio de validación geográfica (metros)</label>
+              <div className="flex items-center gap-2">
+                <input
+                  className="input flex-1"
+                  type="range"
+                  min="50"
+                  max="2000"
+                  step="50"
+                  value={form.radioMetros}
+                  onChange={(e) => setForm((f) => ({ ...f, radioMetros: e.target.value }))}
+                />
+                <span className="text-sm font-medium text-gray-700 w-16 text-right">{form.radioMetros} m</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                El círculo violeta en el mapa muestra el área de cobertura.
+              </p>
+            </div>
+
             {err && <p className="text-xs text-red-600">{err}</p>}
-            <div className="flex justify-end gap-2 pt-2">
+
+            <div className="flex justify-end gap-2 pt-1">
               <button className="btn btn-ghost btn-sm" onClick={() => setModal(false)}>Cancelar</button>
               <button
                 className="btn btn-primary btn-sm"
                 disabled={saveMutation.isPending || !valid}
                 onClick={() => saveMutation.mutate()}
               >
-                {saveMutation.isPending ? '…' : editing ? 'Guardar' : 'Crear'}
+                {saveMutation.isPending ? '…' : editing ? 'Guardar cambios' : 'Crear sede'}
               </button>
             </div>
           </div>
@@ -124,7 +161,7 @@ function SedesTab() {
                     {!s.activa && <span className="badge badge-gray text-[10px]">Inactiva</span>}
                   </div>
                   <div className="text-xs text-gray-400 mt-0.5">
-                    📍 {s.latitud}, {s.longitud} · Radio: {s.radioMetros} m
+                    📍 {parseFloat(s.latitud).toFixed(5)}, {parseFloat(s.longitud).toFixed(5)} · Radio: {s.radioMetros} m
                   </div>
                   {s._count?.servicios !== undefined && (
                     <div className="text-xs text-gray-400">{s._count.servicios} servicio(s)</div>
@@ -182,9 +219,8 @@ function ServiciosTab() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const payload = { nombre: form.nombre, sedeId: form.sedeId };
       if (editing) return bitacoraAPI.adminActualizarServicio(editing.id, { nombre: form.nombre });
-      return bitacoraAPI.adminCrearServicio(payload);
+      return bitacoraAPI.adminCrearServicio({ nombre: form.nombre, sedeId: form.sedeId });
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-servicios'] }); setModal(false); },
     onError: (e) => setErr(e?.response?.data?.message ?? 'Error al guardar'),
@@ -196,9 +232,7 @@ function ServiciosTab() {
     onError: (e) => alert(e?.response?.data?.message ?? 'Error al eliminar'),
   });
 
-  const f = (k) => (e) => setForm((prev) => ({ ...prev, [k]: e.target.value }));
   const valid = form.nombre && (editing || form.sedeId);
-
   const sedeNombre = (id) => sedes.find((s) => s.id === id)?.nombre ?? id;
 
   return (
@@ -208,12 +242,21 @@ function ServiciosTab() {
           <div className="space-y-3">
             <div>
               <label className="label">Nombre *</label>
-              <input className="input" value={form.nombre} onChange={f('nombre')} placeholder="Emergencias" />
+              <input
+                className="input"
+                value={form.nombre}
+                onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))}
+                placeholder="Emergencias"
+              />
             </div>
             {!editing && (
               <div>
                 <label className="label">Sede *</label>
-                <select className="input" value={form.sedeId} onChange={f('sedeId')}>
+                <select
+                  className="input"
+                  value={form.sedeId}
+                  onChange={(e) => setForm((f) => ({ ...f, sedeId: e.target.value }))}
+                >
                   <option value="">Seleccionar sede…</option>
                   {sedes.filter((s) => s.activa).map((s) => (
                     <option key={s.id} value={s.id}>{s.nombre}</option>
@@ -265,9 +308,7 @@ function ServiciosTab() {
                     <span className="text-sm font-medium text-gray-900">🏨 {s.nombre}</span>
                     {!s.activo && <span className="badge badge-gray text-[10px]">Inactivo</span>}
                   </div>
-                  <div className="text-xs text-gray-400 mt-0.5">
-                    {sedeNombre(s.sedeId)}
-                  </div>
+                  <div className="text-xs text-gray-400 mt-0.5">{sedeNombre(s.sedeId)}</div>
                 </div>
                 <div className="flex gap-1">
                   <button className="btn btn-ghost btn-sm" onClick={() => openEdit(s)}>✏️</button>
