@@ -82,3 +82,14 @@ export const auditsAPI = {
   close:  (id, d)        => apiClient.patch(`/api/audits/${id}/close`, d),
   remove: (id)           => apiClient.delete(`/api/audits/${id}`),
 };
+
+// ── Bitácora de Internos ──────────────────────────────────────────────────────
+export const bitacoraAPI = {
+  listarSedes:      ()              => apiClient.get('/api/bitacora/sedes'),
+  crear:            (data)          => apiClient.post('/api/bitacora', data),
+  getPacientes:     (id)            => apiClient.get(`/api/bitacora/${id}/pacientes`),
+  ingresarPaciente: (id, data)      => apiClient.post(`/api/bitacora/${id}/pacientes`, data),
+  registrarEvento:  (id, pacId, data) => apiClient.post(`/api/bitacora/${id}/pacientes/${pacId}/eventos`, data),
+  getHistorial:     (hash)          => apiClient.get(`/api/bitacora/paciente/${hash}/historial`),
+  cerrar:           (id)            => apiClient.patch(`/api/bitacora/${id}/cerrar`),
+};

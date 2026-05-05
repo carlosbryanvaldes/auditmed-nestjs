@@ -22,6 +22,11 @@ model User {
   role       Role        @relation(fields: [roleId], references: [id])
   auditCases AuditCase[]
 
+  // Bitácora de Internos — back-references (requeridas por Prisma)
+  bitacoras        Bitacora[]
+  usuariosBitacora UsuarioBitacora[]
+  eventosPaciente  EventoPaciente[]
+
   @@index([roleId])
   @@map("users")
 }
@@ -195,4 +200,167 @@ model AuditResponse {
   @@unique([caseId, fieldId])
   @@index([caseId])
   @@map("audit_responses")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MÓDULO: Bitácora de Internos
+// Nota: UnidadEjecutora ya existe para Auditmed Pro.
+//       Este módulo usa SedeClinica (tabla sedes_clinicas) — entidad independiente.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SedeClinica {
+  id          String   @id @default(cuid())
+  nombre      String
+  latitud     Float
+  longitud    Float
+  radioMetros Int      @default(200) @map("radio_metros")
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt     @map("updated_at")
+
+  servicios        Servicio[]
+  bitacoras        Bitacora[]
+  usuariosBitacora UsuarioBitacora[]
+
+  @@map("sedes_clinicas")
+}
+
+model Servicio {
+  id        String      @id @default(cuid())
+  nombre    String
+  activo    Boolean     @default(true)
+  sedeId    String      @map("sede_id")
+  sede      SedeClinica @relation(fields: [sedeId], references: [id])
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  bitacoras Bitacora[]
+
+  @@map("servicios_bitacora")
+}
+
+model UsuarioBitacora {
+  id          String      @id @default(cuid())
+  userId      Int         @map("user_id")
+  sedeId      String      @map("sede_id")
+  rolBitacora RolBitacora @default(INTERNO) @map("rol_bitacora")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  user User        @relation(fields: [userId], references: [id])
+  sede SedeClinica @relation(fields: [sedeId], references: [id])
+
+  @@unique([userId, sedeId])
+  @@map("usuarios_bitacora")
+}
+
+model Bitacora {
+  id               String         @id @default(cuid())
+  fecha            DateTime       @default(now())
+  turno            TurnoBitacora
+  supervisor       String
+  medicoUserId     Int            @map("medico_user_id")
+  sedeId           String         @map("sede_id")
+  servicioId       String         @map("servicio_id")
+  estado           EstadoBitacora @default(ABIERTA)
+  latitudApertura  Float?         @map("latitud_apertura")
+  longitudApertura Float?         @map("longitud_apertura")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt     @map("updated_at")
+
+  medico   User             @relation(fields: [medicoUserId], references: [id])
+  sede     SedeClinica      @relation(fields: [sedeId], references: [id])
+  servicio Servicio         @relation(fields: [servicioId], references: [id])
+  pacientes PacienteBitacora[]
+
+  @@index([medicoUserId])
+  @@index([sedeId])
+  @@index([estado])
+  @@map("bitacoras")
+}
+
+model PacienteBitacora {
+  id                String         @id @default(cuid())
+  documentoHash     String         @map("documento_hash")
+  documentoEnc      String         @map("documento_enc")
+  tipoDocumento     TipoDocumento  @map("tipo_documento")
+  nombreEnc         String         @map("nombre_enc")
+  fechaNacEnc       String         @map("fecha_nac_enc")
+  bitacoraIngresoId String         @map("bitacora_ingreso_id")
+  fechaIngreso      DateTime       @default(now()) @map("fecha_ingreso")
+  fechaEgreso       DateTime?      @map("fecha_egreso")
+  estado            EstadoPaciente @default(ACTIVO)
+  servicioId        String?        @map("servicio_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt     @map("updated_at")
+
+  bitacoraIngreso Bitacora        @relation(fields: [bitacoraIngresoId], references: [id])
+  eventos         EventoPaciente[]
+
+  @@index([documentoHash])
+  @@index([estado])
+  @@map("pacientes_bitacora")
+}
+
+model EventoPaciente {
+  id              String           @id @default(cuid())
+  pacienteId      String           @map("paciente_id")
+  bitacoraId      String           @map("bitacora_id")
+  tipoEvento      TipoEvento       @map("tipo_evento")
+  detalle         String?
+  diasEstancia    Int              @map("dias_estancia")
+  registradoPorId Int              @map("registrado_por_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  paciente      PacienteBitacora @relation(fields: [pacienteId], references: [id])
+  registradoPor User             @relation(fields: [registradoPorId], references: [id])
+
+  @@index([pacienteId])
+  @@index([bitacoraId])
+  @@map("eventos_paciente")
+}
+
+// ── Enums ─────────────────────────────────────────────────────────────────────
+
+enum TurnoBitacora {
+  MANANA
+  TARDE
+  NOCHE
+  GUARDIA_24
+  ESPECIAL
+}
+
+enum EstadoBitacora {
+  ABIERTA
+  CERRADA
+}
+
+enum EstadoPaciente {
+  ACTIVO
+  ALTA
+  FALLECIDO
+  TRASLADO_INTERNO
+  TRASLADO_EXTERNO
+  COMPLICACION
+}
+
+enum TipoEvento {
+  INGRESO
+  ALTA
+  FALLECIDO
+  COMPLICACION
+  TRASLADO_INTERNO
+  TRASLADO_EXTERNO
+}
+
+enum TipoDocumento {
+  CEDULA
+  PASAPORTE
+  CARNET_EXTRANJERIA
+  SIN_DOCUMENTO
+}
+
+enum RolBitacora {
+  INTERNO
+  JEFE
+  AUDITOR
+  ADMIN
 }

@@ -58,6 +58,12 @@ const PERMISSIONS = [
   { name: 'master:write', description: 'Gestionar datos maestros', module: 'master' },
   // Admin
   { name: 'admin:all',    description: 'Acceso total al sistema', module: 'admin' },
+  // Bitácora de Internos
+  { name: 'bitacora:read',     description: 'Ver bitácoras',                       module: 'bitacora' },
+  { name: 'bitacora:write',    description: 'Crear y editar bitácoras',             module: 'bitacora' },
+  { name: 'bitacora:close',    description: 'Cerrar turno de bitácora',             module: 'bitacora' },
+  { name: 'bitacora:admin',    description: 'Administrar sedes y servicios',        module: 'bitacora' },
+  { name: 'bitacora:historial',description: 'Ver historial completo del paciente',  module: 'bitacora' },
 ];
 
 // ── Roles con sus permisos ────────────────────────────────────────────────────

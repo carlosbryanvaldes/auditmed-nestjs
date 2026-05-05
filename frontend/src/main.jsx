@@ -16,6 +16,8 @@ import FormBuilder from './pages/forms/FormBuilder';
 import UserList from './pages/admin/UserList';
 import RoleList from './pages/admin/RoleList';
 import MasterData from './pages/admin/MasterData';
+import BitacoraHome from './pages/bitacora/BitacoraHome';
+import HistorialPaciente from './pages/bitacora/HistorialPaciente';
 
 import './index.css';
 
@@ -48,6 +50,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="admin/users"  element={<PrivateRoute permission="users:read"><UserList /></PrivateRoute>} />
               <Route path="admin/roles"  element={<PrivateRoute permission="roles:read"><RoleList /></PrivateRoute>} />
               <Route path="admin/master" element={<PrivateRoute permission="master:read"><MasterData /></PrivateRoute>} />
+
+              {/* Bitácora de Internos */}
+              <Route path="bitacora" element={<PrivateRoute permission="bitacora:read"><BitacoraHome /></PrivateRoute>} />
+              <Route path="bitacora/historial/:hash" element={<PrivateRoute permission="bitacora:historial"><HistorialPaciente /></PrivateRoute>} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -6,6 +6,7 @@ import { RolesModule } from './roles/roles.module';
 import { FormsModule } from './forms/forms.module';
 import { AuditsModule } from './audits/audits.module';
 import { MasterModule } from './master/master.module';
+import { BitacoraModule } from './bitacora/bitacora.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -17,6 +18,7 @@ import { AppController } from './app.controller';
     FormsModule,
     AuditsModule,
     MasterModule,
+    BitacoraModule,
   ],
   controllers: [AppController],
 })

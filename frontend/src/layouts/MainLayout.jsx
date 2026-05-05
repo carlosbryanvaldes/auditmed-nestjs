@@ -6,6 +6,7 @@ const NAV = [
   { to: '/',              label: 'Dashboard',     icon: '📊', perm: null },
   { to: '/audits',        label: 'Auditorías',    icon: '📋', perm: 'audits:read' },
   { to: '/forms',         label: 'Formularios',   icon: '📝', perm: 'forms:read' },
+  { to: '/bitacora',      label: 'Bitácora',      icon: '🗒️', perm: 'bitacora:read' },
   { to: '/admin/users',   label: 'Usuarios',      icon: '👤', perm: 'users:read' },
   { to: '/admin/roles',   label: 'Roles',         icon: '🔐', perm: 'roles:read' },
   { to: '/admin/master',  label: 'Datos maestros',icon: '🗂️', perm: 'master:read' },
