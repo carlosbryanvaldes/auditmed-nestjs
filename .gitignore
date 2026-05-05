@@ -43,3 +43,8 @@ Thumbs.db
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Prisma compiled seed artifacts
+backend/prisma/seed.js
+backend/prisma/seed.js.map
+backend/prisma/seed.d.ts
