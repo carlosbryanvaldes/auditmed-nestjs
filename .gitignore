@@ -3,10 +3,9 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build outputs
-dist/
-build/
+# Build outputs — backend/dist se versiona para deploy en Vercel
 frontend/dist/
+build/
 
 # Environment files — NUNCA subir al repo
 .env
