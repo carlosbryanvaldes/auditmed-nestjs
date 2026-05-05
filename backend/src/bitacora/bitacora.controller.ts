@@ -22,11 +22,72 @@ import {
 export class BitacoraController {
   constructor(private readonly service: BitacoraService) {}
 
+  // ── Admin: Sedes (DEBEN ir antes que las rutas con :id) ─────────────────────
+
+  @Get('admin/sedes')
+  @RequirePermissions('bitacora:admin')
+  adminListarSedes() {
+    return this.service.adminListarSedes();
+  }
+
+  @Post('admin/sedes')
+  @RequirePermissions('bitacora:admin')
+  adminCrearSede(@Body() dto: CrearSedeDto) {
+    return this.service.adminCrearSede(dto);
+  }
+
+  @Put('admin/sedes/:id')
+  @RequirePermissions('bitacora:admin')
+  adminActualizarSede(@Param('id') id: string, @Body() dto: UpdateSedeDto) {
+    return this.service.adminActualizarSede(id, dto);
+  }
+
+  @Delete('admin/sedes/:id')
+  @RequirePermissions('bitacora:admin')
+  adminEliminarSede(@Param('id') id: string) {
+    return this.service.adminEliminarSede(id);
+  }
+
+  // ── Admin: Servicios (DEBEN ir antes que las rutas con :id) ────────────────
+
+  @Get('admin/servicios')
+  @RequirePermissions('bitacora:admin')
+  adminListarServicios(@Query('sedeId') sedeId?: string) {
+    return this.service.adminListarServicios(sedeId);
+  }
+
+  @Post('admin/servicios')
+  @RequirePermissions('bitacora:admin')
+  adminCrearServicio(@Body() dto: CrearServicioDto) {
+    return this.service.adminCrearServicio(dto);
+  }
+
+  @Put('admin/servicios/:id')
+  @RequirePermissions('bitacora:admin')
+  adminActualizarServicio(@Param('id') id: string, @Body() dto: UpdateServicioDto) {
+    return this.service.adminActualizarServicio(id, dto);
+  }
+
+  @Delete('admin/servicios/:id')
+  @RequirePermissions('bitacora:admin')
+  adminEliminarServicio(@Param('id') id: string) {
+    return this.service.adminEliminarServicio(id);
+  }
+
+  // ── Operacionales (rutas con parámetros :id van DESPUÉS de las estáticas) ──
+
   /** Lista sedes clínicas activas con sus servicios */
   @Get('sedes')
   @RequirePermissions('bitacora:read')
   listarSedes() {
     return this.service.listarSedes();
+  }
+
+  /** Historial completo de un paciente por hash */
+  @Get('paciente/:hash/historial')
+  @RequirePermissions('bitacora:historial')
+  getHistorial(@Param('hash') hash: string) {
+    return this.service.obtenerHistorialPaciente(hash);
   }
 
   /** Iniciar turno — crea una nueva bitácora */
@@ -67,13 +128,6 @@ export class BitacoraController {
     );
   }
 
-  /** Historial completo de un paciente por hash (solo JEFE/AUDITOR/ADMIN) */
-  @Get('paciente/:hash/historial')
-  @RequirePermissions('bitacora:historial')
-  getHistorial(@Param('hash') hash: string) {
-    return this.service.obtenerHistorialPaciente(hash);
-  }
-
   /** Cerrar turno */
   @Patch(':id/cerrar')
   @RequirePermissions('bitacora:close')
@@ -83,57 +137,5 @@ export class BitacoraController {
     @Body() dto: CerrarBitacoraDto,
   ) {
     return this.service.cerrarBitacora(id, req.user.sub, dto);
-  }
-
-  // ── Admin: Sedes ────────────────────────────────────────────────────────────
-
-  @Get('admin/sedes')
-  @RequirePermissions('bitacora:admin')
-  adminListarSedes() {
-    return this.service.adminListarSedes();
-  }
-
-  @Post('admin/sedes')
-  @RequirePermissions('bitacora:admin')
-  adminCrearSede(@Body() dto: CrearSedeDto) {
-    return this.service.adminCrearSede(dto);
-  }
-
-  @Put('admin/sedes/:id')
-  @RequirePermissions('bitacora:admin')
-  adminActualizarSede(@Param('id') id: string, @Body() dto: UpdateSedeDto) {
-    return this.service.adminActualizarSede(id, dto);
-  }
-
-  @Delete('admin/sedes/:id')
-  @RequirePermissions('bitacora:admin')
-  adminEliminarSede(@Param('id') id: string) {
-    return this.service.adminEliminarSede(id);
-  }
-
-  // ── Admin: Servicios ────────────────────────────────────────────────────────
-
-  @Get('admin/servicios')
-  @RequirePermissions('bitacora:admin')
-  adminListarServicios(@Query('sedeId') sedeId?: string) {
-    return this.service.adminListarServicios(sedeId);
-  }
-
-  @Post('admin/servicios')
-  @RequirePermissions('bitacora:admin')
-  adminCrearServicio(@Body() dto: CrearServicioDto) {
-    return this.service.adminCrearServicio(dto);
-  }
-
-  @Put('admin/servicios/:id')
-  @RequirePermissions('bitacora:admin')
-  adminActualizarServicio(@Param('id') id: string, @Body() dto: UpdateServicioDto) {
-    return this.service.adminActualizarServicio(id, dto);
-  }
-
-  @Delete('admin/servicios/:id')
-  @RequirePermissions('bitacora:admin')
-  adminEliminarServicio(@Param('id') id: string) {
-    return this.service.adminEliminarServicio(id);
   }
 }
